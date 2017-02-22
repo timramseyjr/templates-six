@@ -134,6 +134,36 @@
 </section>
 
 {if $templatefile == 'homepage'}
+    <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="7000">
+        <div class="carousel-inner" role="listbox">
+            <div class="item">
+                <img src="{$WEB_ROOT}/templates/{$template}/img/servers.jpg" alt="Server Cluster" class="img-responsive">
+                <div class="container">
+                    <div class="carousel-caption">
+                        <h2>Web Hosting You Can Trust!</h2>
+                        <p>With 99.9% uptime, and USA based server management, you can be rest assured you will get only the best service.  Free site transfers for all new clients - let us show you the True Light Difference!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="item active">
+                <img src="{$WEB_ROOT}/templates/{$template}/img/hostingsmallbusiness.jpg" alt="Small Business Web Hosting" class="img-responsive">
+                <div class="container">
+                    <div class="carousel-caption">
+                        <h3>Small Business Web Hosting</h3>
+                        <p>We offer Web Hosting and Web Developement for Business of all sizes.  Contact us and we will match the services you need for your business.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
     <section id="home-banner">
         <div class="container text-center">
             {if $registerdomainenabled || $transferdomainenabled}
@@ -162,52 +192,43 @@
             {/if}
         </div>
     </section>
-    <div class="home-shortcuts">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 hidden-sm hidden-xs text-center">
-                    <p class="lead">
-                        {$LANG.howcanwehelp}
-                    </p>
-                </div>
-                <div class="col-sm-12 col-md-8">
-                    <ul>
-                        {if $registerdomainenabled || $transferdomainenabled}
-                            <li>
-                                <a id="btnBuyADomain" href="domainchecker.php">
-                                    <i class="fa fa-globe"></i>
-                                    <p>
-                                        {$LANG.buyadomain} <span>&raquo;</span>
-                                    </p>
-                                </a>
-                            </li>
-                        {/if}
-                        <li>
-                            <a id="btnOrderHosting" href="cart.php">
-                                <i class="fa fa-hdd-o"></i>
-                                <p>
-                                    {$LANG.orderhosting} <span>&raquo;</span>
-                                </p>
-                            </a>
-                        </li>
-                        <li>
-                            <a id="btnMakePayment" href="clientarea.php">
-                                <i class="fa fa-credit-card"></i>
-                                <p>
-                                    {$LANG.makepayment} <span>&raquo;</span>
-                                </p>
-                            </a>
-                        </li>
-                        <li>
-                            <a id="btnGetSupport" href="submitticket.php">
-                                <i class="fa fa-envelope-o"></i>
-                                <p>
-                                    {$LANG.getsupport} <span>&raquo;</span>
-                                </p>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+    <div class="container whyhome">
+        <div class="row">
+            <div class="col-sm-12">
+                <h1 class="article-title" itemprop="name">Why Choose True Light Web?</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-9 pad-bottom-10-768">
+                <h2>Great Customer Service</h2>
+                First, we listen to you. We have learned how important it is to engage into a project with clear communication with our clients. This is the most important step enabling us to learn our client's business position, needs &amp; problems. Once we have a clear idea of your unique needs, we can serve you the best.
+            </div>
+            <div class="col-sm-3">
+                <img title="Customer Serving" src="{$WEB_ROOT}/templates/{$template}/img/supportive650.jpg" alt="Customer Serving">
+            </div>
+            <div class="clearfix">&nbsp;</div>
+            <div class="col-sm-9 pull-right">
+                <h2>Free Migration Transfers</h2>
+                Our packages come with a Migration service that can move all of your account data over to True Light Web. We can also transfer your Domain if you migrate to have all of your services under one roof.
+            </div>
+            <div class="col-sm-3">
+                <img title="Free Sever Migration" src="{$WEB_ROOT}/templates/{$template}/img/migrate650.jpg" alt="Free Sever Migration">
+            </div>
+            <div class="clearfix">&nbsp;</div>
+            <div class="col-sm-9 pad-bottom-10-768">
+                <h2>One Click Installs</h2>
+                We deploy Softaculous on our servers which mean easy one-click installs of many of your favorite software. Click the "install" button from your hosting account to get the ball rolling quickly.
+            </div>
+            <div class="col-sm-3">
+                <img title="Easy Softaculous 1 Click Installs" src="{$WEB_ROOT}/templates/{$template}/img/oneclickinstall650.jpg" alt="Easy Softaculous 1 Click Installs">
+            </div>
+            <div class="clearfix">&nbsp;</div>
+            <div class="col-sm-9 pull-right pad-bottom-10-768">
+                <h2>Located in USA</h2>
+                All of our servers and support staff are located right here in the USA. You can be rest assured that you will receive prompt response from someone you can undeestand.
+            </div>
+            <div class="col-sm-3">
+                <img title="In the USA" src="{$WEB_ROOT}/templates/{$template}/img/made-in-usa650.jpg" alt="In the USA">
             </div>
         </div>
     </div>
