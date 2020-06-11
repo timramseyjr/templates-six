@@ -15,32 +15,22 @@
 
     <div class="announcement-single">
 
-        <a href="{routePath('announcement-view', $announcement.id, $announcement.urlfriendlytitle)}" class="title">
-            {$announcement.title}
-        </a>
+        <h2>
+            <span class="label label-default">
+                {"M jS"|date:$announcement.timestamp}
+            </span>
+            <a href="{if $seofriendlyurls}{$WEB_ROOT}/announcements/{$announcement.id}/{$announcement.urlfriendlytitle}.html{else}{$smarty.server.PHP_SELF}?id={$announcement.id}{/if}">{$announcement.title}</a>
+        </h2>
 
-        {if $announcement.text|strip_tags|strlen < 350}
-            <p>{$announcement.text}</p>
-        {else}
-            <p>{$announcement.summary}
-            <a href="{routePath('announcement-view', $announcement.id, $announcement.urlfriendlytitle)}" class="label label-warning">{$LANG.readmore} &raquo;</a>
-            </p>
-        {/if}
-
-        <div class="article-items">
-            <i class="fas fa-calendar-alt fa-fw"></i>
-            {$carbon->createFromTimestamp($announcement.timestamp)->format('jS M Y')}
-            {if $announcement.editLink}
-                <a href="{$announcement.editLink}" class="admin-inline-edit">
-                    <i class="fas fa-pencil-alt fa-fw"></i>
-                    {$LANG.edit}
-                </a>
-            {/if}
-        </div>
+        <blockquote>
+            <p>{if $announcement.text|strip_tags|strlen < 350}{$announcement.text}{else}{$announcement.summary}
+            <a href="{if $seofriendlyurls}{$WEB_ROOT}/announcements/{$announcement.id}/{$announcement.urlfriendlytitle}.html{else}{$smarty.server.PHP_SELF}?id={$announcement.id}{/if}" class="label label-warning">{$LANG.readmore} &raquo;</a>
+            {/if}</p>
+        </blockquote>
 
         {if $announcementsFbRecommend}
-            <div class="fb-like hidden-sm hidden-xs" data-layout="standard" data-href="{fqdnRoutePath('announcement-view', $announcement.id, $announcement.urlfriendlytitle)}" data-send="true" data-width="450" data-show-faces="true" data-action="recommend"></div>
-            <div class="fb-like hidden-lg hidden-md" data-layout="button_count" data-href="{fqdnRoutePath('announcement-view', $announcement.id, $announcement.urlfriendlytitle)}" data-send="true" data-width="450" data-show-faces="true" data-action="recommend"></div>
+            <div class="fb-like hidden-sm hidden-xs" data-layout="standard" data-href="{$systemurl}{if $seofriendlyurls}announcements/{$announcement.id}/{$announcement.urlfriendlytitle}.html{else}announcements.php?id={$announcement.id}{/if}" data-send="true" data-width="450" data-show-faces="true" data-action="recommend"></div>
+            <div class="fb-like hidden-lg hidden-md" data-layout="button_count" data-href="{$systemurl}{if $seofriendlyurls}announcements/{$announcement.id}/{$announcement.urlfriendlytitle}.html{else}announcements.php?id={$announcement.id}{/if}" data-send="true" data-width="450" data-show-faces="true" data-action="recommend"></div>
         {/if}
 
     </div>
@@ -59,13 +49,13 @@
                 <div class="input-group">
                     {if $prevpage}
                         <span class="input-group-btn">
-                            <a href="{routePath('announcement-index-paged', $prevpage, $view)}" class="btn btn-default">&laquo; {$LANG.previouspage}</a>
+                            <a href="announcements.php?page={$prevpage}{if $view}&view={$view}{/if}" class="btn btn-default">&laquo; {$LANG.previouspage}</a>
                         </span>
                     {/if}
                     <input class="form-control" style="text-align: center;" value="{$LANG.page} {$pagenumber}" disabled="disabled">
                     {if $nextpage}
                         <span class="input-group-btn">
-                            <a href="{routePath('announcement-index-paged', $nextpage, $view)}" class="btn btn-default">{$LANG.nextpage} &raquo;</a>
+                            <a href="announcements.php?page={$nextpage}{if $view}&view={$view}{/if}" class="btn btn-default">{$LANG.nextpage} &raquo;</a>
                         </span>
                     {/if}
                 </div>
