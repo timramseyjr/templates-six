@@ -4,21 +4,28 @@
 
 <script>
 var stateNotRequired = true;
+    jQuery(document).ready(function() {
+    WHMCS.form.register();
+});
 </script>
-<script type="text/javascript" src="{$BASE_PATH_JS}/StatesDropdown.js"></script>
+<script src="{$BASE_PATH_JS}/StatesDropdown.js"></script>
 
-<div class="alert alert-block alert-info text-center">
-    <form class="form-inline" role="form" method="post" action="{$smarty.server.PHP_SELF}?action=contacts">
-        <div class="form-group">
-            <label for="inputContactID">{$LANG.clientareachoosecontact}</label>
-            <select name="contactid" id="inputContactID" onchange="submit()" class="form-control">
-                {foreach item=contact from=$contacts}
-                    <option value="{$contact.id}">{$contact.name} - {$contact.email}</option>
-                {/foreach}
-                <option value="new" selected="selected">{$LANG.clientareanavaddcontact}</option>
-            </select>
+<div class="alert alert-block alert-info">
+    <form class="form-horizontal" role="form" method="post" action="{$smarty.server.PHP_SELF}?action=contacts">
+        <div class="row">
+            <label for="inputContactId" class="col-sm-3 control-label">{$LANG.clientareachoosecontact}</label>
+            <div class="col-sm-6">
+                <select name="contactid" id="inputContactId" onchange="submit()" class="form-control">
+                    {foreach item=contact from=$contacts}
+                        <option value="{$contact.id}">{$contact.name} - {$contact.email}</option>
+                    {/foreach}
+                    <option value="new" selected="selected">{$LANG.clientareanavaddcontact}</option>
+                </select>
+            </div>
+            <div class="col-sm-2 hidden-xs">
+                <button type="submit" class="btn btn-default btn-block">{$LANG.go}</button>
+            </div>
         </div>
-        <button type="submit" class="btn btn-default">{$LANG.go}</button>
     </form>
 </div>
 
@@ -52,6 +59,13 @@ var stateNotRequired = true;
                 <label for="inputPhone" class="control-label">{$LANG.clientareaphonenumber}</label>
                 <input type="tel" name="phonenumber" id="inputPhone" value="{$contactphonenumber}" class="form-control" />
             </div>
+
+            {if $showTaxIdField}
+                <div class="form-group">
+                    <label for="inputTaxId" class="control-label">{lang key=$taxIdLabel}</label>
+                    <input type="text" name="tax_id" id="inputTaxId" class="form-control" value="{$contactTaxId}" />
+                </div>
+            {/if}
 
             <div class="form-group">
                 <label class="control-label" for="inputSubaccountActivate">{$LANG.subaccountactivate}</label>
@@ -100,7 +114,7 @@ var stateNotRequired = true;
 
         <div class="form-group">
             <label class="full control-label">{$LANG.subaccountpermissions}</label>
-            <div class="checkbox clearfix">
+            <div class="checkbox clearfix" id="contactPermissions">
                 {foreach $allPermissions as $permission}
                     <div class="col-sm-6">
                         <label>
@@ -112,19 +126,31 @@ var stateNotRequired = true;
                     </div>
                 {/foreach}
             </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-sm btn-check-all" data-checkbox-container="contactPermissions" data-btn-check-toggle="1" id="btnSelectAll-contactPermissions" data-label-text-select="{lang key='checkAll'}" data-label-text-deselect="{lang key='uncheckAll'}">
+                        {lang key='checkAll'}
+                    </button>
+                </div>
+            </div>
         </div>
         <fieldset class="form-horizontal">
             <div id="newPassword1" class="form-group has-feedback">
-                <label for="inputNewPassword1" class="col-sm-5 control-label">{$LANG.newpassword}</label>
-                <div class="col-sm-6">
+                <label for="inputNewPassword1" class="col-sm-4 control-label">{$LANG.newpassword}</label>
+                <div class="col-sm-5">
                     <input type="password" class="form-control" id="inputNewPassword1" name="password" autocomplete="off" />
                     <span class="form-control-feedback glyphicon"></span>
                     {include file="$template/includes/pwstrength.tpl" noDisable=true}
                 </div>
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-default generate-password" data-targetfields="inputNewPassword1,inputNewPassword2">
+                        {$LANG.generatePassword.btnLabel}
+                    </button>
+                </div>
             </div>
             <div id="newPassword2" class="form-group has-feedback">
-                <label for="inputNewPassword2" class="col-sm-5 control-label">{$LANG.confirmnewpassword}</label>
-                <div class="col-sm-6">
+                <label for="inputNewPassword2" class="col-sm-4 control-label">{$LANG.confirmnewpassword}</label>
+                <div class="col-sm-5">
                     <input type="password" class="form-control" id="inputNewPassword2" name="password2" autocomplete="off" />
                     <span class="form-control-feedback glyphicon"></span>
                     <div id="inputNewPassword2Msg">
@@ -136,7 +162,7 @@ var stateNotRequired = true;
     </div>
 
     <div class="form-group">
-        <label class="control-label">{$LANG.clientareacontactsemails}</label>
+        <h3>{$LANG.clientareacontactsemails}</h3>
         <div class="controls checkbox">
             <label>
                 <input type="checkbox" name="generalemails" id="generalemails" value="1"{if $generalemails} checked{/if} />

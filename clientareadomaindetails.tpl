@@ -4,8 +4,25 @@
     {include file="$template/includes/alert.tpl" type="error" msg=$LANG.moduleactionfailed textcenter=true}
 {/if}
 
+{if $unpaidInvoice}
+    <div class="alert alert-{if $unpaidInvoiceOverdue}danger{else}warning{/if}" id="alert{if $unpaidInvoiceOverdue}Overdue{else}Unpaid{/if}Invoice">
+        <div class="pull-right">
+            <a href="viewinvoice.php?id={$unpaidInvoice}" class="btn btn-xs btn-default">
+                {lang key='payInvoice'}
+            </a>
+        </div>
+        {$unpaidInvoiceMessage}
+    </div>
+{/if}
+
 <div class="tab-content margin-bottom">
     <div class="tab-pane fade in active" id="tabOverview">
+
+        {if $alerts}
+            {foreach $alerts as $alert}
+                {include file="$template/includes/alert.tpl" type=$alert.type msg="<strong>{$alert.title}</strong><br>{$alert.description}" textcenter=true}
+            {/foreach}
+        {/if}
 
         {if $systemStatus != 'Active'}
             <div class="alert alert-warning text-center" role="alert">
@@ -49,6 +66,28 @@
                 <h4><strong>{$LANG.clientareastatus}:</strong></h4> {$status}
             </div>
         </div>
+        {if $sslStatus}
+            <div class="row">
+                <div class="col-sm-offset-1 col-sm-5{if $sslStatus->isInactive()} ssl-inactive{/if}">
+                    <h4><strong>{$LANG.sslState.sslStatus}</strong></h4> <img src="{$sslStatus->getImagePath()}" width="16"> {$sslStatus->getStatusDisplayLabel()}
+                </div>
+                {if $sslStatus->isActive()}
+                    <div class="col-sm-6">
+                        <h4><strong>{$LANG.sslState.startDate}</strong></h4> {$sslStatus->startDate->toClientDateFormat()}
+                    </div>
+                {/if}
+            </div>
+            {if $sslStatus->isActive()}
+                <div class="row">
+                    <div class="col-sm-offset-1 col-sm-5">
+                        <h4><strong>{$LANG.sslState.issuerName}</strong></h4> {$sslStatus->issuerName}
+                    </div>
+                    <div class="col-sm-6">
+                        <h4><strong>{$LANG.sslState.expiryDate}</strong></h4> {$sslStatus->expiryDate->toClientDateFormat()}
+                    </div>
+                </div>
+            {/if}
+        {/if}
 
         {if $registrarclientarea}
             <div class="moduleoutput">
@@ -64,7 +103,7 @@
 
         <br />
 
-        {if $systemStatus == 'Active'
+        {if $canDomainBeManaged
             and (
                 $managementoptions.nameservers or
                 $managementoptions.contacts or
@@ -75,21 +114,21 @@
             <h4>{$LANG.doToday}</h4>
 
             <ul>
-                {if $managementoptions.nameservers}
+                {if $systemStatus == 'Active' && $managementoptions.nameservers}
                     <li>
                         <a class="tabControlLink" data-toggle="tab" href="#tabNameservers">
                             {$LANG.changeDomainNS}
                         </a>
                     </li>
                 {/if}
-                {if $managementoptions.contacts}
+                {if $systemStatus == 'Active' && $managementoptions.contacts}
                     <li>
                         <a href="clientarea.php?action=domaincontacts&domainid={$domainid}">
                             {$LANG.updateWhoisContact}
                         </a>
                     </li>
                 {/if}
-                {if $managementoptions.locking}
+                {if $systemStatus == 'Active' && $managementoptions.locking}
                     <li>
                         <a class="tabControlLink" data-toggle="tab" href="#tabReglock">
                             {$LANG.changeRegLock}
@@ -98,7 +137,7 @@
                 {/if}
                 {if $renew}
                     <li>
-                        <a href="cart.php?gid=renewals">
+                        <a href="{routePath('domain-renewal', $domain)}">
                             {$LANG.renewYourDomain}
                         </a>
                     </li>
@@ -144,7 +183,7 @@
     </div>
     <div class="tab-pane fade" id="tabNameservers">
 
-        <h3>Nameservers</h3>
+        <h3>{$LANG.domainnameservers}</h3>
 
         {if $nameservererror}
             {include file="$template/includes/alert.tpl" type="error" msg=$nameservererror textcenter=true}
@@ -216,7 +255,6 @@
                     <input type="submit" class="btn btn-lg btn-danger" value="{$LANG.domainreglockdisable}" />
                 </p>
             {else}
-                <input type="hidden" name="autorenew" value="enable">
                 <p class="text-center">
                     <input type="submit" class="btn btn-lg btn-success" name="reglock" value="{$LANG.domainreglockenable}" />
                 </p>
@@ -258,7 +296,7 @@
         {if $addons.idprotection}
             <div class="row margin-bottom">
                 <div class="col-xs-3 col-md-2 text-center">
-                    <i class="fa fa-shield fa-3x"></i>
+                    <i class="fas fa-shield-alt fa-3x"></i>
                 </div>
                 <div class="col-xs-9 col-md-10">
                     <strong>{$LANG.domainidprotection}</strong><br />
@@ -279,7 +317,7 @@
         {if $addons.dnsmanagement}
             <div class="row margin-bottom">
                 <div class="col-xs-3 col-md-2 text-center">
-                    <i class="fa fa-cloud fa-3x"></i>
+                    <i class="fas fa-cloud fa-3x"></i>
                 </div>
                 <div class="col-xs-9 col-md-10">
                     <strong>{$LANG.domainaddonsdnsmanagement}</strong><br />
@@ -300,7 +338,7 @@
         {if $addons.emailforwarding}
             <div class="row margin-bottom">
                 <div class="col-xs-3 col-md-2 text-center">
-                    <i class="fa fa-envelope fa-3x">&nbsp;</i><i class="fa fa-mail-forward fa-2x"></i>
+                    <i class="fas fa-envelope fa-3x">&nbsp;</i><i class="fas fa-share fa-2x"></i>
                 </div>
                 <div class="col-xs-9 col-md-10">
                     <strong>{$LANG.domainemailforwarding}</strong><br />

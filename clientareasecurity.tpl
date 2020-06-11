@@ -1,42 +1,44 @@
-{if $twofaavailable}
+{if $linkableProviders }
+    <h2>
+        {lang key='remoteAuthn.titleLinkedAccounts'}
+    </h2>
 
-    {if $twofaactivation}
+    {include file="$template/includes/linkedaccounts.tpl" linkContext="clientsecurity" }
 
-        <div id="twofaactivation">
-            {$twofaactivation}
-        </div>
+    <br>
 
-    {else}
+    {include file="$template/includes/linkedaccounts.tpl" linkContext="linktable" }
 
-        <h2>{$LANG.twofactorauth}</h2>
+    <br>
+{/if}
 
-        {include file="$template/includes/alert.tpl" type="warning" msg="{lang key="clientAreaSecurityTwoFactorAuthRecommendation"}"}
+{if $twoFactorAuthAvailable}
 
-        <p>
-            {$LANG.twofaactivationintro}
-        </p>
+    <h2>{$LANG.twofactorauth}</h2>
 
-        <br />
+    <p class="twofa-config-link disable{if !$twoFactorAuthEnabled} hidden{/if}">
+        {$LANG.twofacurrently} <strong>{$LANG.enabled|strtolower}</strong>
+    </p>
+    <p class="twofa-config-link enable{if $twoFactorAuthEnabled} hidden{/if}">
+        {$LANG.twofacurrently} <strong>{$LANG.disabled|strtolower}</strong>
+    </p>
 
-        <form method="post" action="clientarea.php?action=security">
-            <input type="hidden" name="2fasetup" value="1" />
-            <p align="center">
-                {if $twofastatus}
-                    <input type="submit" value="{$LANG.twofadisableclickhere}" class="btn btn-danger" />
-                {else}
-                    <input type="submit" value="{$LANG.twofaenableclickhere}" class="btn btn-success" />
-                {/if}
-            </p>
-        </form>
+    {include file="$template/includes/alert.tpl" type="warning" msg="{lang key="clientAreaSecurityTwoFactorAuthRecommendation"}"}
 
-        <br />
-        <br />
 
-    {/if}
+    <a href="{routePath('account-security-two-factor-disable')}" class="btn btn-danger open-modal twofa-config-link disable{if !$twoFactorAuthEnabled} hidden{/if}" data-modal-title="{$LANG.twofadisable}" data-modal-class="twofa-setup">
+        {$LANG.twofadisableclickhere}
+    </a>
+    <a href="{routePath('account-security-two-factor-enable')}" class="btn btn-success open-modal twofa-config-link enable{if $twoFactorAuthEnabled} hidden{/if}" data-modal-title="{$LANG.twofaenable}" data-modal-class="twofa-setup">
+        {$LANG.twofaenableclickhere}
+    </a>
+
+    <br />
+    <br />
 
 {/if}
 
-{if $securityquestionsenabled && !$twofaactivation}
+{if $securityquestionsenabled}
 
     <h2>{$LANG.clientareanavsecurityquestions}</h2>
 
@@ -122,9 +124,6 @@
     </form>
 
     <p>{$LANG.sso.disablenotice}</p>
-
-    <link href="{$BASE_PATH_CSS}/bootstrap-switch.min.css" rel="stylesheet">
-    <script src="{$BASE_PATH_JS}/bootstrap-switch.min.js"></script>
 
     <br />
     <br />

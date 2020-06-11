@@ -35,7 +35,11 @@ if ($status == 'Draft') {
     $pdf->SetFillColor(223, 85, 74);
     $pdf->SetDrawColor(171, 49, 43);
 }
+if ($status == 'Payment Pending'){
+$pdf->Cell(100, 18, strtoupper(Lang::trans('invoices' . str_replace(' ', '', $status))), 'TB', 0, 'C', '1');
+} else {
 $pdf->Cell(100, 18, strtoupper(Lang::trans('invoices' . strtolower($status))), 'TB', 0, 'C', '1');
+}
 $pdf->StopTransform();
 $pdf->SetTextColor(0);
 
@@ -45,6 +49,9 @@ $pdf->SetFont($pdfFont, '', 13);
 foreach ($companyaddress as $addressLine) {
     $pdf->Cell(180, 4, trim($addressLine), 0, 1, 'R');
     $pdf->SetFont($pdfFont, '', 9);
+}
+if ($taxCode) {
+    $pdf->Cell(180, 4, $taxIdLabel . ': ' . trim($taxCode), 0, 1, 'R');
 }
 $pdf->Ln(5);
 
@@ -84,6 +91,9 @@ if ($clientsdetails["address2"]) {
 }
 $pdf->Cell(0, 4, $clientsdetails["city"] . ", " . $clientsdetails["state"] . ", " . $clientsdetails["postcode"], 0, 1, 'L');
 $pdf->Cell(0, 4, $clientsdetails["country"], 0, 1, 'L');
+if (array_key_exists('tax_id', $clientsdetails) && $clientsdetails['tax_id']) {
+    $pdf->Cell(0, 4, $taxIdLabel . ': ' . $clientsdetails['tax_id'], 0, 1, 'L');
+}
 if ($customfields) {
     $pdf->Ln();
     foreach ($customfields as $customfield) {

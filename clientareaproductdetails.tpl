@@ -10,6 +10,17 @@
     {include file="$template/includes/alert.tpl" type="error" msg=$LANG.cancellationrequestedexplanation textcenter=true idname="alertPendingCancellation"}
 {/if}
 
+{if $unpaidInvoice}
+    <div class="alert alert-{if $unpaidInvoiceOverdue}danger{else}warning{/if}" id="alert{if $unpaidInvoiceOverdue}Overdue{else}Unpaid{/if}Invoice">
+        <div class="pull-right">
+            <a href="viewinvoice.php?id={$unpaidInvoice}" class="btn btn-xs btn-default">
+                {lang key='payInvoice'}
+            </a>
+        </div>
+        {$unpaidInvoiceMessage}
+    </div>
+{/if}
+
 <div class="tab-content margin-bottom">
     <div class="tab-pane fade in active" id="tabOverview">
 
@@ -25,8 +36,8 @@
                         <div class="product-status product-status-{$rawstatus|strtolower}">
                             <div class="product-icon text-center">
                                 <span class="fa-stack fa-lg">
-                                    <i class="fa fa-circle fa-stack-2x"></i>
-                                    <i class="fa fa-{if $type eq "hostingaccount" || $type == "reselleraccount"}hdd-o{elseif $type eq "server"}database{else}archive{/if} fa-stack-1x fa-inverse"></i>
+                                    <i class="fas fa-circle fa-stack-2x"></i>
+                                    <i class="fas fa-{if $type eq "hostingaccount" || $type == "reselleraccount"}hdd{elseif $type eq "server"}database{else}archive{/if} fa-stack-1x fa-inverse"></i>
                                 </span>
                                 <h3>{$product}</h3>
                                 <h4>{$groupname}</h4>
@@ -98,31 +109,37 @@
                         <ul class="nav nav-tabs nav-tabs-overflow">
                             {if $domain}
                                 <li class="active">
-                                    <a href="#domain" data-toggle="tab"><i class="fa fa-globe fa-fw"></i> {if $type eq "server"}{$LANG.sslserverinfo}{elseif ($type eq "hostingaccount" || $type eq "reselleraccount") && $serverdata}{$LANG.hostingInfo}{else}{$LANG.clientareahostingdomain}{/if}</a>
+                                    <a href="#domain" data-toggle="tab"><i class="fas fa-globe fa-fw"></i> {if $type eq "server"}{$LANG.sslserverinfo}{elseif ($type eq "hostingaccount" || $type eq "reselleraccount") && $serverdata}{$LANG.hostingInfo}{else}{$LANG.clientareahostingdomain}{/if}</a>
                                 </li>
                             {elseif $moduleclientarea}
                                 <li class="active">
-                                    <a href="#manage" data-toggle="tab"><i class="fa fa-globe fa-fw"></i> {$LANG.manage}</a>
+                                    <a href="#manage" data-toggle="tab"><i class="fas fa-globe fa-fw"></i> {$LANG.manage}</a>
                                 </li>
                             {/if}
                             {if $configurableoptions}
                                 <li{if !$domain && !$moduleclientarea} class="active"{/if}>
-                                    <a href="#configoptions" data-toggle="tab"><i class="fa fa-cubes fa-fw"></i> {$LANG.orderconfigpackage}</a>
+                                    <a href="#configoptions" data-toggle="tab"><i class="fas fa-cubes fa-fw"></i> {$LANG.orderconfigpackage}</a>
+                                </li>
+                            {/if}
+                            {if $metricStats}
+                                <li{if !$domain && !$moduleclientarea && !$configurableoptions} class="active"{/if}>
+                                    <a href="#metrics" data-toggle="tab"><i class="fas fa-chart-line fa-fw"></i> {$LANG.metrics.title}</a>
                                 </li>
                             {/if}
                             {if $customfields}
-                                <li{if !$domain && !$moduleclientarea && !$configurableoptions} class="active"{/if}>
-                                    <a href="#additionalinfo" data-toggle="tab"><i class="fa fa-info fa-fw"></i> {$LANG.additionalInfo}</a>
+                                <li{if !$domain && !$moduleclientarea && !$metricStats && !$configurableoptions} class="active"{/if}>
+                                    <a href="#additionalinfo" data-toggle="tab"><i class="fas fa-info fa-fw"></i> {$LANG.additionalInfo}</a>
                                 </li>
                             {/if}
                             {if $lastupdate}
                                 <li{if !$domain && !$moduleclientarea && !$configurableoptions && !$customfields} class="active"{/if}>
-                                    <a href="#resourceusage" data-toggle="tab"><i class="fa fa-inbox fa-fw"></i> {$LANG.resourceUsage}</a>
+                                    <a href="#resourceusage" data-toggle="tab"><i class="fas fa-inbox fa-fw"></i> {$LANG.resourceUsage}</a>
                                 </li>
                             {/if}
                         </ul>
                     </div>
                 </div>
+
                 <div class="tab-content product-details-tab-container">
                     {if $domain}
                         <div class="tab-pane fade in active text-center" id="domain">
@@ -165,14 +182,14 @@
                                         </div>
                                     </div>
                                 {/if}
-                            {elseif ($type eq "hostingaccount" || $type eq "reselleraccount") && $serverdata}
+                            {else}
                                 {if $domain}
                                     <div class="row">
                                         <div class="col-sm-5 text-right">
                                             <strong>{$LANG.orderdomain}</strong>
                                         </div>
                                         <div class="col-sm-7 text-left">
-                                            {$domain}&nbsp;<a href="http://{$domain}" target="_blank" class="btn btn-default btn-xs" >{$LANG.visitwebsite}</a>
+                                            {$domain}
                                         </div>
                                     </div>
                                 {/if}
@@ -186,40 +203,75 @@
                                         </div>
                                     </div>
                                 {/if}
-                                <div class="row">
-                                    <div class="col-sm-5 text-right">
-                                        <strong>{$LANG.servername}</strong>
-                                    </div>
-                                    <div class="col-sm-7 text-left">
-                                        {$serverdata.hostname}
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-5 text-right">
-                                        <strong>{$LANG.domainregisternsip}</strong>
-                                    </div>
-                                    <div class="col-sm-7 text-left">
-                                        {$serverdata.ipaddress}
-                                    </div>
-                                </div>
-                                {if $serverdata.nameserver1 || $serverdata.nameserver2 || $serverdata.nameserver3 || $serverdata.nameserver4 || $serverdata.nameserver5}
+                                {if $serverdata}
                                     <div class="row">
                                         <div class="col-sm-5 text-right">
-                                            <strong>{$LANG.domainnameservers}</strong>
+                                            <strong>{$LANG.servername}</strong>
                                         </div>
                                         <div class="col-sm-7 text-left">
-                                            {if $serverdata.nameserver1}{$serverdata.nameserver1} ({$serverdata.nameserver1ip})<br />{/if}
-                                            {if $serverdata.nameserver2}{$serverdata.nameserver2} ({$serverdata.nameserver2ip})<br />{/if}
-                                            {if $serverdata.nameserver3}{$serverdata.nameserver3} ({$serverdata.nameserver3ip})<br />{/if}
-                                            {if $serverdata.nameserver4}{$serverdata.nameserver4} ({$serverdata.nameserver4ip})<br />{/if}
-                                            {if $serverdata.nameserver5}{$serverdata.nameserver5} ({$serverdata.nameserver5ip})<br />{/if}
+                                            {$serverdata.hostname}
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-sm-5 text-right">
+                                            <strong>{$LANG.domainregisternsip}</strong>
+                                        </div>
+                                        <div class="col-sm-7 text-left">
+                                            {$serverdata.ipaddress}
+                                        </div>
+                                    </div>
+                                    {if $serverdata.nameserver1 || $serverdata.nameserver2 || $serverdata.nameserver3 || $serverdata.nameserver4 || $serverdata.nameserver5}
+                                        <div class="row">
+                                            <div class="col-sm-5 text-right">
+                                                <strong>{$LANG.domainnameservers}</strong>
+                                            </div>
+                                            <div class="col-sm-7 text-left">
+                                                {if $serverdata.nameserver1}{$serverdata.nameserver1} ({$serverdata.nameserver1ip})<br />{/if}
+                                                {if $serverdata.nameserver2}{$serverdata.nameserver2} ({$serverdata.nameserver2ip})<br />{/if}
+                                                {if $serverdata.nameserver3}{$serverdata.nameserver3} ({$serverdata.nameserver3ip})<br />{/if}
+                                                {if $serverdata.nameserver4}{$serverdata.nameserver4} ({$serverdata.nameserver4ip})<br />{/if}
+                                                {if $serverdata.nameserver5}{$serverdata.nameserver5} ({$serverdata.nameserver5ip})<br />{/if}
+                                            </div>
+                                        </div>
+                                    {/if}
                                 {/if}
-                            {else}
-                                <p>
-                                    {$domain}
-                                </p>
+                                {if $domain && $sslStatus}
+                                    <div class="row">
+                                        <div class="col-sm-5 text-right">
+                                            <strong>{$LANG.sslState.sslStatus}</strong>
+                                        </div>
+                                        <div class="col-sm-7 text-left{if $sslStatus->isInactive()} ssl-inactive{/if}">
+                                            <img src="{$sslStatus->getImagePath()}" width="12"> {$sslStatus->getStatusDisplayLabel()}
+                                        </div>
+                                    </div>
+                                    {if $sslStatus->isActive()}
+                                        <div class="row">
+                                            <div class="col-sm-5 text-right">
+                                                <strong>{$LANG.sslState.startDate}</strong>
+                                            </div>
+                                            <div class="col-sm-7 text-left">
+                                                {$sslStatus->startDate->toClientDateFormat()}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-5 text-right">
+                                                <strong>{$LANG.sslState.expiryDate}</strong>
+                                            </div>
+                                            <div class="col-sm-7 text-left">
+                                                {$sslStatus->expiryDate->toClientDateFormat()}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-5 text-right">
+                                                <strong>{$LANG.sslState.issuerName}</strong>
+                                            </div>
+                                            <div class="col-sm-7 text-left">
+                                                {$sslStatus->issuerName}
+                                            </div>
+                                        </div>
+                                    {/if}
+                                {/if}
+                                <br>
                                 <p>
                                     <a href="http://{$domain}" class="btn btn-default" target="_blank">{$LANG.visitwebsite}</a>
                                     {if $domainId}
@@ -234,6 +286,19 @@
                                 </div>
                             {/if}
                         </div>
+                        {if $sslStatus}
+                            <div class="tab-pane fade text-center" id="ssl-info">
+                                {if $sslStatus->isActive()}
+                                    <div class="alert alert-success" role="alert">
+                                        {lang key='sslActive' expiry=$sslStatus->expiryDate->toClientDateFormat()}
+                                    </div>
+                                {else}
+                                    <div class="alert alert-warning ssl-required" role="alert">
+                                        {lang key='sslRequired'}
+                                    </div>
+                                {/if}
+                            </div>
+                        {/if}
                     {elseif $moduleclientarea}
                         <div class="tab-pane fade{if !$domain} in active{/if} text-center" id="manage">
                             {if $moduleclientarea}
@@ -257,8 +322,13 @@
                             {/foreach}
                         </div>
                     {/if}
+                    {if $metricStats}
+                        <div class="tab-pane fade{if !$domain && !$moduleclientarea && !$configurableoptions} in active{/if}" id="metrics">
+                            {include file="$template/clientareaproductusagebilling.tpl"}
+                        </div>
+                    {/if}
                     {if $customfields}
-                        <div class="tab-pane fade{if !$domain && !$moduleclientarea && !$configurableoptions} in active{/if} text-center" id="additionalinfo">
+                        <div class="tab-pane fade{if !$domain && !$moduleclientarea && !$configurableoptions && !$metricStats} in active{/if} text-center" id="additionalinfo">
                             {foreach from=$customfields item=field}
                                 <div class="row">
                                     <div class="col-sm-5">
@@ -321,7 +391,7 @@
                         {$download.description}
                     </p>
                     <p>
-                        <a href="{$download.link}" class="btn btn-default"><i class="fa fa-download"></i> {$LANG.downloadname}</a>
+                        <a href="{$download.link}" class="btn btn-default"><i class="fas fa-download"></i> {$LANG.downloadname}</a>
                     </p>
                 </div>
             {/foreach}
@@ -339,19 +409,28 @@
         <div class="row">
             {foreach from=$addons item=addon}
                 <div class="col-xs-10 col-xs-offset-1">
-                    <h4>{$addon.name}</h4>
-                    <p>
-                        {$addon.pricing}
-                    </p>
-                    <p>
-                        {$LANG.registered}: {$addon.regdate}
-                    </p>
-                    <p>
-                        {$LANG.clientareahostingnextduedate}: {$addon.nextduedate}
-                    </p>
-                    <p>
-                        <span class="label status-{$addon.rawstatus|strtolower}">{$addon.status}</span>
-                    </p>
+                    <div class="panel panel-default panel-accent-blue">
+                        <div class="panel-heading">
+                            {$addon.name}
+                            <div class="pull-right status-{$addon.rawstatus|strtolower}">{$addon.status}</div>
+                        </div>
+                        <div class="row panel-body">
+                            <div class="col-md-6">
+                                <p>
+                                    {$addon.pricing}
+                                </p>
+                                <p>
+                                    {$LANG.registered}: {$addon.regdate}
+                                </p>
+                                <p>
+                                    {$LANG.clientareahostingnextduedate}: {$addon.nextduedate}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            {$addon.managementActions}
+                        </div>
+                    </div>
                 </div>
             {/foreach}
         </div>
@@ -374,16 +453,21 @@
             <input type="hidden" name="modulechangepassword" value="true" />
 
             <div id="newPassword1" class="form-group has-feedback">
-                <label for="inputNewPassword1" class="col-sm-5 control-label">{$LANG.newpassword}</label>
-                <div class="col-sm-6">
+                <label for="inputNewPassword1" class="col-sm-4 control-label">{$LANG.newpassword}</label>
+                <div class="col-sm-5">
                     <input type="password" class="form-control" id="inputNewPassword1" name="newpw" autocomplete="off" />
                     <span class="form-control-feedback glyphicon"></span>
                     {include file="$template/includes/pwstrength.tpl"}
                 </div>
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-default generate-password" data-targetfields="inputNewPassword1,inputNewPassword2">
+                        {$LANG.generatePassword.btnLabel}
+                    </button>
+                </div>
             </div>
             <div id="newPassword2" class="form-group has-feedback">
-                <label for="inputNewPassword2" class="col-sm-5 control-label">{$LANG.confirmnewpassword}</label>
-                <div class="col-sm-6">
+                <label for="inputNewPassword2" class="col-sm-4 control-label">{$LANG.confirmnewpassword}</label>
+                <div class="col-sm-5">
                     <input type="password" class="form-control" id="inputNewPassword2" name="confirmpw" autocomplete="off" />
                     <span class="form-control-feedback glyphicon"></span>
                     <div id="inputNewPassword2Msg">

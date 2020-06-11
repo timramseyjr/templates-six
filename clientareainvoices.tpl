@@ -43,7 +43,7 @@
                     <td><span class="label status status-{$invoice.statusClass}">{$invoice.status}</span></td>
                     <td class="responsive-edit-button" style="display: none;">
                         <a href="viewinvoice.php?id={$invoice.id}" class="btn btn-block btn-info">
-                            {$LANG.manageproduct}
+                            {$LANG.invoicesview}
                         </a>
                     </td>
                 </tr>
@@ -51,6 +51,6 @@
         </tbody>
     </table>
     <div class="text-center" id="tableLoading">
-        <p><i class="fa fa-spinner fa-spin"></i> {$LANG.loading}</p>
+        <p><i class="fas fa-spinner fa-spin"></i> {$LANG.loading}</p>
     </div>
 </div>
