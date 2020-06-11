@@ -1,8 +1,8 @@
-<form role="form" method="post" action="{routePath('knowledgebase-search')}">
-    <div class="input-group input-group-lg kb-search">
-        <input type="text" id="inputKnowledgebaseSearch" name="search" class="form-control" placeholder="{$LANG.clientHomeSearchKb}" />
+<form role="form" method="post" action="{$WEB_ROOT}/knowledgebase.php?action=search">
+    <div class="input-group">
+        <input type="text" name="search" class="form-control" placeholder="{$LANG.kbsearchexplain}" />
         <span class="input-group-btn">
-            <input type="submit" id="btnKnowledgebaseSearch" class="btn btn-primary btn-input-padded-responsive" value="{$LANG.search}" />
+            <input type="submit" class="btn btn-primary btn-input-padded-responsive" value="{$LANG.search}" />
         </span>
     </div>
 </form>
@@ -13,20 +13,13 @@
     <div class="row kbcategories">
         {foreach from=$kbcats name=kbcats item=kbcat}
             <div class="col-sm-4">
-                <a href="{routePath('knowledgebase-category-view', {$kbcat.id}, {$kbcat.urlfriendlyname})}">
-                    <i class="far fa-folder-open"></i>
-                    {$kbcat.name} ({$kbcat.numarticles})
+                <a href="{if $seofriendlyurls}{$WEB_ROOT}/knowledgebase/{$kbcat.id}/{$kbcat.urlfriendlyname}{else}knowledgebase.php?action=displaycat&amp;catid={$kbcat.id}{/if}">
+                    <span class="glyphicon glyphicon-folder-close"></span> {$kbcat.name} <span class="badge badge-info">{$kbcat.numarticles}</span>
                 </a>
-                {if $kbcat.editLink}
-                    <a href="{$kbcat.editLink}" class="admin-inline-edit">
-                        <i class="fas fa-pencil-alt fa-fw"></i>
-                        {$LANG.edit}
-                    </a>
-                {/if}
                 <p>{$kbcat.description}</p>
             </div>
             {if $smarty.foreach.kbcats.iteration mod 3 == 0}
-                </div><div class="row">
+                <div class="clearfix"></div>
             {/if}
         {/foreach}
     </div>
@@ -40,15 +33,9 @@
 
     <div class="kbarticles">
         {foreach from=$kbmostviews item=kbarticle}
-            <a href="{routePath('knowledgebase-article-view', {$kbarticle.id}, {$kbarticle.urlfriendlytitle})}">
+            <a href="{if $seofriendlyurls}{$WEB_ROOT}/knowledgebase/{$kbarticle.id}/{$kbarticle.urlfriendlytitle}.html{else}knowledgebase.php?action=displayarticle&amp;id={$kbarticle.id}{/if}">
                 <span class="glyphicon glyphicon-file"></span>&nbsp;{$kbarticle.title}
             </a>
-            {if $kbarticle.editLink}
-                <a href="{$kbarticle.editLink}" class="admin-inline-edit">
-                    <i class="fas fa-pencil-alt fa-fw"></i>
-                    {$LANG.edit}
-                </a>
-            {/if}
             <p>{$kbarticle.article|truncate:100:"..."}</p>
         {/foreach}
     </div>
